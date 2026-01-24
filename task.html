@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="bg-[#F7FBFF] text-slate-800 min-h-screen">
+
+    <!-- SVG background -->
+  <div class="absolute inset-0 -z-10 pointer-events-none">
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      class="w-full h-full">
+
+      <!-- soft blobs -->
+      <circle cx="200" cy="200" r="180" fill="#E6F4FF"/>
+      <circle cx="1200" cy="150" r="220" fill="#FFF1CC"/>
+      <circle cx="1000" cy="650" r="260" fill="#E9FFF3"/>
+      <circle cx="300" cy="700" r="240" fill="#FFEAF1"/>
+
+    </svg>
+  </div>
+
+<div class="max-w-[75vh] mx-auto px-6 py-8">
+<div id="game" class="w-full h-[75vh] flex flex-col justify-center text-center">
+
+<div id="break-screen" class="hidden flex flex-col items-center justify-center space-y-6">
+  
+  <div class="text-2xl font-semibold text-slate-600">
+    Let’s take a short break 🌤
+  </div>
+
+  <div
+    id="break-timer"
+    class="w-32 h-32 rounded-full bg-white shadow-md
+           flex items-center justify-center
+           text-5xl font-bold text-[#6EC1FF]">
+    45
+  </div>
+
+</div>
+
+<div
+  id="instruction-screen"
+  class="flex flex-col items-center justify-center space-y-6 py-20">
+
+  <div class="text-3xl font-semibold text-slate-700">
+    How to play 🎮
+  </div>
+
+  <div class="text-lg text-slate-600 text-center max-w-md space-y-3">
+    <p>🖼️ Pictures will appear one by one</p>
+    <p>👆 You can tap anywhere when you want</p>
+    <p>🌤️ There will be short breaks</p>
+  </div>
+
+  <button
+    id="start-btn"
+    class="bg-[#6EC1FF] text-white px-10 py-3 rounded-full
+           text-lg font-semibold shadow-md
+           active:scale-95 transition">
+    Start
+  </button>
+</div>
+
+
+
+  <div id="round-text" class="hidden mb-4 text-slate-400"></div>
+
+  <div id="card"
+       class="hidden bg-[#FFF3CC] rounded-3xl p-6 cursor-pointer select-none shadow-md max-w-full mx-auto">
+
+    <img id="action-img"
+         class="mx-auto mb-6 hidden w-full rounded-2xl">
+
+    <div id="action-word"
+         class="text-3xl font-semibold opacity-0 transition-opacity duration-500">
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script type="module" src="./js/task.js"></script>
+</body>
+</html>

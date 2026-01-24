@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Fredoka', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+.choice-card {
+  background: #fff7db;
+  border-radius: 24px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 6px 0 #f1e1a6;
+}
+
+.choice-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
+
+.choice-card:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #f1e1a6;
+}
+
+.choice-label {
+  margin-top: 10px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.page {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  max-width: 85vh;
+}
+
+.page.fade-out {
+  opacity: 0;
+  transform: scale(0.96);
+  filter: blur(2px);
+}
+
+#card {
+    max-width: 100%;
+}
+
+#break-screen {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.break-show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.break-hide {
+  opacity: 0;
+  transform: scale(0.96);
+}

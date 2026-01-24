@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="bg-[#F7FBFF] text-slate-800 min-h-screen">
+
+<!-- SVG background -->
+  <div class="absolute inset-0 -z-10 pointer-events-none">
+    <svg
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      class="w-full h-full">
+
+      <!-- soft blobs -->
+      <circle cx="200" cy="200" r="180" fill="#E6F4FF"/>
+      <circle cx="1200" cy="150" r="220" fill="#FFF1CC"/>
+      <circle cx="1000" cy="650" r="260" fill="#E9FFF3"/>
+      <circle cx="300" cy="700" r="240" fill="#FFEAF1"/>
+
+    </svg>
+  </div>
+
+<div
+  id="page"
+  class="page w-full max-w-4xl px-6 py-8 mx-auto">
+
+  <div class="bg-[#6EC1FF] text-white rounded-2xl px-6 py-4 mb-8 shadow-md text-center">
+  <h2 class="text-2xl md:text-3xl font-semibold">
+    Where would you go?
+  </h2>
+</div>
+
+
+  <div class="grid grid-cols-2 gap-4 md:gap-6">
+  
+  <div class="choice-card" data-choice="contrast1">
+    <img src="./assets/images/contrast1.png">
+  </div>
+
+  <div class="choice-card" data-choice="contrast2">
+    <img src="./assets/images/contrast2.png">
+  </div>
+
+  <div class="choice-card" data-choice="contrast3">
+    <img src="./assets/images/contrast3.png">
+  </div>
+
+  <div class="choice-card" data-choice="target" data-target="true">
+    <img src="./assets/images/target.png">
+  </div>
+
+</div>
+
+
+</div>
+
+<script>
+    const page = document.getElementById("page");
+
+document.querySelectorAll('.choice-card').forEach(tile => {
+  tile.onclick = () => {
+    const choice = tile.dataset.choice;
+
+    localStorage.setItem("initial_choice", choice);
+
+    page.classList.add("fade-out");
+
+    setTimeout(() => {
+      if (tile.dataset.target) {
+        location.href = 'task.html';
+      } else {
+        location.href = 'task.html?end=true';
+      }
+    }, 400);
+  };
+});
+
+
+</script>
+
+</body>
+</html>

@@ -15,8 +15,8 @@ const breakTimerEl = document.getElementById("break-timer");
 /* -------------------------
    CONSTANTS
 -------------------------- */
-const WORD_DELAY = 1500;
-const STIMULUS_DURATION = 4000;
+const WORD_DELAY = 2500;
+const STIMULUS_DURATION = 6000;
 const BREAK_DURATION = 45;
 
 /* -------------------------

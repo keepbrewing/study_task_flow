@@ -326,8 +326,17 @@ function finish() {
 
   document.getElementById("export-btn").onclick = () => {
     exportToCSV(Session.responses, Session.id);
+    clearSession();
   };
 }
+
+function clearSession() {
+  localStorage.removeItem("participant_id");
+  localStorage.removeItem("participant_gender");
+  localStorage.removeItem("initial_choice");
+  localStorage.removeItem("study_sessions");
+}
+
 
 
 /* -------------------------

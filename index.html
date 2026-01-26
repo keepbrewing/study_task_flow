@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+   <script>
+    const pid = localStorage.getItem("participant_id");
+    const gender = localStorage.getItem("participant_gender");
+
+    if (!pid || !gender) {
+      window.location.replace("participant.html");
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study</title>
@@ -31,11 +39,31 @@
   id="page"
   class="page w-full max-w-4xl px-6 py-8 mx-auto">
 
-  <div class="bg-[#6EC1FF] text-white rounded-2xl px-6 py-4 mb-8 shadow-md text-center">
-  <h2 class="text-2xl md:text-3xl font-semibold">
-    Where would you go?
+ <div class="bg-white/90 backdrop-blur rounded-3xl px-8 py-8 mb-8 shadow-md text-center space-y-6">
+
+  <h2 class="text-2xl md:text-3xl font-semibold text-slate-700">
+    Let’s look carefully &#128064;
   </h2>
+
+  <p class="text-lg text-slate-600 leading-relaxed">
+    Look at all the pictures.<br>
+    One picture shows a problem.<br>
+    Click or touch the picture with the problem.
+  </p>
+
+  <button
+    id="play-instruction-audio"
+    class="mx-auto flex items-center gap-3
+           bg-[#E6F4FF] text-[#3A8DDE]
+           px-6 py-3 rounded-full
+           font-semibold shadow-sm
+           active:scale-95 transition">
+
+    &#128266; Hear instructions
+  </button>
+
 </div>
+
 
 
   <div class="grid grid-cols-2 gap-4 md:gap-6">
@@ -81,6 +109,15 @@ document.querySelectorAll('.choice-card').forEach(tile => {
     }, 400);
   };
 });
+
+const instructionAudio = new Audio("./assets/audio/instruction.mp3");
+
+  const audioBtn = document.getElementById("play-instruction-audio");
+
+  audioBtn.onclick = () => {
+    instructionAudio.currentTime = 0;
+    instructionAudio.play();
+  };
 
 
 </script>

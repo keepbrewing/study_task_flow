@@ -3,21 +3,30 @@ export function exportToCSV(responses, sessionId) {
 
   const headers = [
     "sessionId",
+    "participantId",
+    "gender",
     "round",
     "category",
+    "blockType",
     "action",
     "responseTimeMs",
     "timestamp"
   ];
 
+
   const rows = responses.map(r => [
-    r.sessionId,
-    r.round,
-    r.category,
-    r.action ?? "",
-    r.responseTimeMs ?? "",
-    new Date(r.timestamp).toISOString()
-  ]);
+  r.sessionId,
+  r.participantId,
+  r.gender,
+  r.round,
+  r.category,
+  r.blockType,
+  r.action ?? "",
+  r.responseTimeMs ?? "",
+  new Date(r.timestamp).toISOString()
+]);
+
+
 
   const csvContent = [
     headers.join(","),

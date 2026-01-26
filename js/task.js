@@ -2,6 +2,57 @@ import { categories } from "./data.js";
 import { Session } from "./state.js";
 import { exportToCSV } from "./csv.js";
 
+const loadingScreen = document.getElementById("loading-screen");
+const instructionScreen = document.getElementById("instruction-screen");
+
+instructionScreen.classList.add("hidden");
+
+function getAllImagePaths() {
+  const gender = Session.gender;
+  const paths = [];
+
+  Object.entries(categories).forEach(([cat, arr]) => {
+    arr.forEach(item => {
+      paths.push(
+        `./assets/actions/${cat}/${gender}/${item.img}`
+      );
+    });
+  });
+
+  return paths;
+}
+
+function preloadImages(paths, onProgress, onComplete) {
+  let loaded = 0;
+
+  paths.forEach(src => {
+    const img = new Image();
+    img.src = src;
+
+    img.onload = img.onerror = () => {
+      loaded++;
+      onProgress(Math.round((loaded / paths.length) * 100));
+
+      if (loaded === paths.length) {
+        onComplete();
+      }
+    };
+  });
+}
+
+const images = getAllImagePaths();
+
+preloadImages(
+  images,
+  percent => {
+    document.getElementById("loading-bar").style.width = percent + "%";
+  },
+  () => {
+    loadingScreen.classList.add("hidden");
+    instructionScreen.classList.remove("hidden");
+  }
+);
+
 /* -------------------------
    DOM
 -------------------------- */
@@ -18,6 +69,11 @@ const breakTimerEl = document.getElementById("break-timer");
 const WORD_DELAY = 1500;
 const STIMULUS_DURATION = 4000;
 const BREAK_DURATION = 45;
+const BLOCKS = [
+  { name: "practice", count: 3, break: 5 },
+  { name: "final1", count: 3, break: 10 },
+  { name: "final2", count: 3, break: 0 }
+];
 
 /* -------------------------
    STATE
@@ -27,6 +83,9 @@ let currentIndex = 0;
 let clicked = false;
 let stimulusStart = 0;
 let timer = null;
+let blockIndex = 0;
+let trialInBlock = 0;
+let breakInterval = null;
 
 /* -------------------------
    INITIAL CHOICE
@@ -35,9 +94,12 @@ const firstChoice = localStorage.getItem("initial_choice");
 
 Session.responses.push({
   sessionId: Session.id,
+  participantId: Session.participantId,
+  gender: Session.gender,
   round: 0,
   category: "initial",
   action: firstChoice,
+  blockType: Session.blockType,
   responseTimeMs: null,
   timestamp: Date.now()
 });
@@ -89,12 +151,15 @@ card.addEventListener("pointerdown", () => {
 
   Session.responses.push({
     sessionId: Session.id,
-    round: Session.round,
+    participantId: Session.participantId,
+    gender: Session.gender,
     category: s.category,
+    blockType: Session.blockType,
     action: s.word,
     responseTimeMs: rt,
     timestamp: Date.now()
   });
+
 });
 
 /* -------------------------
@@ -109,14 +174,20 @@ function runTrial() {
   const s = stimuli[currentIndex];
 
   // round number
-  Session.round = Math.floor(currentIndex / 3) + 1;
-  roundText.innerText = `Round ${Session.round}`;
+  const block = BLOCKS[blockIndex];
+  Session.blockType = block.name;
+  roundText.innerText =
+    block.name === "practice"
+      ? "Practice Trial"
+      : block.name === "final1"
+      ? "Final Trial Set 1"
+      : "Final Trial Set 2";
 
   clicked = false;
   wordEl.innerText = "";
   wordEl.style.opacity = 0;
 
-  imgEl.src = `./assets/actions/${s.img}`;
+  imgEl.src = `./assets/actions/${s.category}/${Session.gender}/${s.img}`;
   imgEl.classList.remove("hidden");
 
   stimulusStart = performance.now();
@@ -132,22 +203,35 @@ function runTrial() {
     if (!clicked) {
       Session.responses.push({
         sessionId: Session.id,
-        round: Session.round,
+        participantId: Session.participantId,
+        gender: Session.gender,
         category: s.category,
+        blockType: Session.blockType,
         action: null,
         responseTimeMs: null,
         timestamp: Date.now()
       });
+
     }
 
     currentIndex++;
+    trialInBlock++;
 
-    // break after every 3 trials
-    if (currentIndex % 3 === 0 && currentIndex < stimuli.length) {
-      startBreak();
+    const block = BLOCKS[blockIndex];
+
+    if (trialInBlock >= block.count) {
+      blockIndex++;
+      trialInBlock = 0;
+
+      if (block.break > 0 && blockIndex < BLOCKS.length) {
+        startBreak(block.break);
+      } else {
+        runTrial();
+      }
     } else {
       runTrial();
     }
+
 
   }, STIMULUS_DURATION);
 }
@@ -155,30 +239,37 @@ function runTrial() {
 /* -------------------------
    BREAK
 -------------------------- */
-function startBreak() {
+function startBreak(seconds) {
+  clearInterval(breakInterval);
+
   card.classList.add("hidden");
-breakScreen.classList.remove("hidden");
-roundText.classList.add("hidden");
+  breakScreen.classList.remove("hidden");
+  roundText.classList.add("hidden");
 
-
-let remaining = 45;
-breakTimerEl.innerText = remaining;
-
-const interval = setInterval(() => {
-  remaining--;
+  let remaining = seconds;
   breakTimerEl.innerText = remaining;
 
-  if (remaining <= 0) {
-    clearInterval(interval);
+  breakScreen.querySelector("div").innerText =
+    seconds === 5
+      ? "Ready… Steady… Go!"
+      : "Take a short break";
 
-    breakScreen.classList.add("hidden");
-    card.classList.remove("hidden");
+  breakInterval = setInterval(() => {
+    remaining--;
+    breakTimerEl.innerText = remaining;
 
-    runTrial();
-  }
-}, 1000);
+    if (remaining <= 0) {
+      clearInterval(breakInterval);
 
+      breakScreen.classList.add("hidden");
+      card.classList.remove("hidden");
+      roundText.classList.remove("hidden");
+
+      runTrial();
+    }
+  }, 1000);
 }
+
 
 /* -------------------------
    FINISH

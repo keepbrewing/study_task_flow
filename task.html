@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script>
+    const pid = localStorage.getItem("participant_id");
+    const gender = localStorage.getItem("participant_gender");
+    const choice = localStorage.getItem("initial_choice");
+
+    if (!pid || !gender || !choice) {
+      window.location.replace("participant.html");
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Task</title>
@@ -45,6 +54,23 @@
   </div>
 
 </div>
+<div
+  id="loading-screen"
+  class="flex flex-col items-center justify-center space-y-6 py-20">
+
+  <div class="text-3xl font-semibold text-slate-700">
+    Getting things ready…
+  </div>
+
+  <div class="w-48 h-3 bg-white rounded-full overflow-hidden shadow">
+    <div
+      id="loading-bar"
+      class="h-full bg-[#6EC1FF] transition-all duration-300"
+      style="width: 0%">
+    </div>
+  </div>
+
+</div>
 
 <div
   id="instruction-screen"
@@ -74,7 +100,7 @@
   <div id="round-text" class="hidden mb-4 text-slate-400"></div>
 
   <div id="card"
-       class="hidden bg-[#FFF3CC] rounded-3xl p-6 cursor-pointer select-none shadow-md max-w-full mx-auto">
+       class="hidden bg-white/80 rounded-3xl p-6 cursor-pointer select-none shadow-md max-w-full mx-auto">
 
     <img id="action-img"
          class="mx-auto mb-6 hidden w-full rounded-2xl">

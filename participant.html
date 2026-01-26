@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participant Info</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="bg-[#F7FBFF] text-slate-800 min-h-screen">
+
+  <!-- SVG background -->
+  <div class="absolute inset-0 -z-10 pointer-events-none">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+      <circle cx="200" cy="200" r="180" fill="#E6F4FF"/>
+      <circle cx="1200" cy="150" r="220" fill="#FFF1CC"/>
+      <circle cx="1000" cy="650" r="260" fill="#E9FFF3"/>
+      <circle cx="300" cy="700" r="240" fill="#FFEAF1"/>
+    </svg>
+  </div>
+
+  <div class="min-h-screen flex items-center justify-center">
+  <div class="max-w-[75vh] w-full px-6 py-10 text-center space-y-8">
+    <div class="bg-white/80 backdrop-blur rounded-3xl p-8 shadow-md text-center space-y-8">
+
+    <h1 class="text-3xl font-semibold text-slate-700">
+      Let’s begin 🌈
+    </h1>
+
+    <button
+      id="play-intro-audio"
+      class="flex items-center justify-center gap-3 bg-white px-6 py-3 rounded-full
+            shadow-md text-slate-700 font-semibold
+            active:scale-95 transition">
+
+      &#128266; Audio Guide
+    </button>
+
+
+    <div class="space-y-4">
+
+      <input
+        id="pid"
+        type="text"
+        placeholder="Participant ID"
+        class="w-full px-5 py-4 rounded-2xl text-lg outline-none shadow-md bg-[#FFF1CC]"
+      />
+
+      <div class="flex justify-center gap-6">
+
+        <button
+          data-gender="male"
+          class="gender-btn bg-[#6EC1FF] text-white px-8 py-3 rounded-full text-lg shadow-md">
+          Male
+        </button>
+
+        <button
+          data-gender="female"
+          class="gender-btn bg-[#FF9EC7] text-white px-8 py-3 rounded-full text-lg shadow-md">
+          Female
+        </button>
+
+      </div>
+
+    </div>
+
+    <button
+      id="continue"
+      disabled
+      class="opacity-40 bg-slate-400 text-white px-10 py-3 rounded-full text-lg">
+      Continue
+    </button>
+
+  </div></div></div>
+
+<script>
+  let gender = null;
+
+  const pidInput = document.getElementById("pid");
+  const continueBtn = document.getElementById("continue");
+
+  document.querySelectorAll(".gender-btn").forEach(btn => {
+    btn.onclick = () => {
+      gender = btn.dataset.gender;
+
+      document.querySelectorAll(".gender-btn").forEach(b =>
+        b.classList.remove("ring-4", "ring-blue-300")
+      );
+
+      btn.classList.add("ring-4", "ring-blue-300");
+      validate();
+    };
+  });
+
+  pidInput.addEventListener("input", validate);
+
+  function validate() {
+    if (pidInput.value.trim() && gender) {
+      continueBtn.disabled = false;
+      continueBtn.classList.remove("opacity-40", "bg-slate-400");
+      continueBtn.classList.add("bg-[#09FF85]");
+    }
+  }
+
+  continueBtn.onclick = () => {
+    localStorage.setItem("participant_id", pidInput.value.trim());
+    localStorage.setItem("participant_gender", gender);
+
+    location.href = "index.html";
+  };
+
+  const introAudio = new Audio("./assets/audio/intro.mp3");
+
+  const playIntroBtn = document.getElementById("play-intro-audio");
+
+  playIntroBtn.onclick = () => {
+    introAudio.currentTime = 0;
+    introAudio.play();
+  };
+</script>
+
+</body>
+</html>

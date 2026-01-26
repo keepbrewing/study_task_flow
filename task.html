@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script>
-    const pid = localStorage.getItem("participant_id");
-    const gender = localStorage.getItem("participant_gender");
-    const choice = localStorage.getItem("initial_choice");
+  <script src="./js/guard.js"></script>
 
-    if (!pid || !gender || !choice) {
-      window.location.replace("participant.html");
-    }
-  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Task</title>

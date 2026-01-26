@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="./js/guard.js"></script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Participant Info</title>
@@ -107,6 +109,8 @@
   continueBtn.onclick = () => {
     localStorage.setItem("participant_id", pidInput.value.trim());
     localStorage.setItem("participant_gender", gender);
+    localStorage.setItem("study_status", "in_progress");
+    localStorage.setItem("session_started_at", Date.now());
 
     location.href = "index.html";
   };

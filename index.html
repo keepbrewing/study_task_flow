@@ -1,14 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <script>
-    const pid = localStorage.getItem("participant_id");
-    const gender = localStorage.getItem("participant_gender");
-
-    if (!pid || !gender) {
-      window.location.replace("participant.html");
-    }
-  </script>
+   <script src="./js/guard.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study</title>
@@ -104,6 +97,7 @@ document.querySelectorAll('.choice-card').forEach(tile => {
       if (tile.dataset.target) {
         location.href = 'task.html';
       } else {
+        localStorage.setItem("study_status", "ended_early");
         location.href = 'task.html?end=true';
       }
     }, 400);

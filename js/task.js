@@ -298,6 +298,7 @@ function finish() {
     "study_sessions",
     JSON.stringify(Session.responses)
   );
+  localStorage.setItem("study_status", "completed");
 
   const game = document.getElementById("game");
 

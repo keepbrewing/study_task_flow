@@ -66,8 +66,8 @@ const breakTimerEl = document.getElementById("break-timer");
 /* -------------------------
    CONSTANTS
 -------------------------- */
-const WORD_DELAY = 2500;
-const STIMULUS_DURATION = 6000;
+const WORD_DELAY = 1500;
+const STIMULUS_DURATION = 4000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
   { name: "practice", count: 3, break: 5 },
@@ -116,20 +116,37 @@ if (endEarly) {
    BUILD ALL STIMULI (9 total)
 -------------------------- */
 function buildStimuli() {
-  const list = [];
+  const help = shuffle([...categories.help]);
+  const avoid = shuffle([...categories.avoid]);
+  const distress = shuffle([...categories.distress]);
 
-  Object.entries(categories).forEach(([cat, arr]) => {
-    arr.forEach(item => {
-      list.push({
-        category: cat,
-        word: item.word,
-        img: item.img
-      });
-    });
-  });
+  const rounds = [];
 
-  return shuffle(list);
+  for (let i = 0; i < 3; i++) {
+    const round = shuffle([
+      {
+        category: "help",
+        word: help[i].word,
+        img: help[i].img
+      },
+      {
+        category: "avoid",
+        word: avoid[i].word,
+        img: avoid[i].img
+      },
+      {
+        category: "distress",
+        word: distress[i].word,
+        img: distress[i].img
+      }
+    ]);
+
+    rounds.push(...round);
+  }
+
+  return rounds;
 }
+
 
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);

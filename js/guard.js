@@ -1,4 +1,8 @@
 (function () {
+  const page = location.pathname.split("/").pop();
+  if(page === "" || page === "participant.html"){
+    return;
+  }
 
   const MAX_SESSION_MINUTES = 15;
   const now = Date.now();
@@ -8,8 +12,6 @@
   const gender = localStorage.getItem("participant_gender");
   const pdCompleted = localStorage.getItem("pd_completed");
   const status = localStorage.getItem("study_status");
-
-  const page = location.pathname.split("/").pop();
 
   function resetSession() {
     localStorage.clear();

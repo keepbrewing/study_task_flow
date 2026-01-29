@@ -4,8 +4,51 @@ import { exportToCSV } from "./csv.js";
 
 const loadingScreen = document.getElementById("loading-screen");
 const instructionScreen = document.getElementById("instruction-screen");
+const storyScreen = document.getElementById("story-screen");
+const storyText = document.getElementById("story-text");
+const practiceModal = document.getElementById("practice-modal");
+const practiceOkBtn = document.getElementById("practice-ok-btn");
 
-instructionScreen.classList.add("hidden");
+const STORY_LINES = [
+  "You and other children were building block towers.",
+  "One child’s block tower fell down.",
+  "The child feels sad."
+];
+
+const instructionAudio = new Audio("./assets/audio/task.mp3");
+
+const audioBtn = document.getElementById("play-instruction-audio");
+
+audioBtn.onclick = () => {
+  instructionAudio.currentTime = 0;
+  instructionAudio.play();
+};
+
+function playStorySequence() {
+  instructionScreen.classList.add("hidden");
+  storyScreen.classList.remove("hidden");
+
+  let index = 0;
+
+  function showNextLine() {
+    if (index >= STORY_LINES.length) {
+      // pause 2 seconds after last line
+      setTimeout(() => {
+        storyScreen.classList.add("hidden");
+        instructionScreen.classList.remove("hidden");
+      }, 2000);
+      return;
+    }
+
+    storyText.innerHTML += STORY_LINES[index] + "<br><br>";
+    index++;
+
+    setTimeout(showNextLine, 1800);
+  }
+
+  storyText.innerHTML = "";
+  showNextLine();
+}
 
 function getAllImagePaths() {
   const gender = Session.gender;
@@ -49,13 +92,10 @@ preloadImages(
   },
   () => {
     loadingScreen.classList.add("hidden");
-    instructionScreen.classList.remove("hidden");
+    playStorySequence();
   }
 );
 
-/* -------------------------
-   DOM
--------------------------- */
 const imgEl = document.getElementById("action-img");
 const wordEl = document.getElementById("action-word");
 const card = document.getElementById("card");
@@ -63,21 +103,16 @@ const roundText = document.getElementById("round-text");
 const breakScreen = document.getElementById("break-screen");
 const breakTimerEl = document.getElementById("break-timer");
 
-/* -------------------------
-   CONSTANTS
--------------------------- */
 const WORD_DELAY = 1500;
 const STIMULUS_DURATION = 4000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
   { name: "practice", count: 3, break: 5 },
   { name: "final1", count: 3, break: 10 },
-  { name: "final2", count: 3, break: 0 }
+  { name: "final2", count: 3, break: 10 },
+  { name: "final3", count: 3, break: 0 }
 ];
 
-/* -------------------------
-   STATE
--------------------------- */
 let stimuli = [];
 let currentIndex = 0;
 let clicked = false;
@@ -87,17 +122,16 @@ let blockIndex = 0;
 let trialInBlock = 0;
 let breakInterval = null;
 
-/* -------------------------
-   INITIAL CHOICE
--------------------------- */
 const firstChoice = localStorage.getItem("initial_choice");
 
 Session.responses.push({
   sessionId: Session.id,
   participantId: Session.participantId,
   gender: Session.gender,
-  round: 0,
   category: "initial",
+  pd_first: localStorage.getItem("pd_first"),
+  pd_second: localStorage.getItem("pd_second"),
+  pd_result: localStorage.getItem("pd_result"),
   action: firstChoice,
   blockType: Session.blockType,
   responseTimeMs: null,
@@ -111,40 +145,32 @@ if (endEarly) {
   finish();
 }
 
-
-/* -------------------------
-   BUILD ALL STIMULI (9 total)
--------------------------- */
 function buildStimuli() {
   const help = shuffle([...categories.help]);
   const avoid = shuffle([...categories.avoid]);
   const distress = shuffle([...categories.distress]);
 
-  const rounds = [];
+  // PRACTICE: 1 from each
+  const practice = shuffle([
+    { category: "help", word: help[0].word, img: help[0].img },
+    { category: "avoid", word: avoid[0].word, img: avoid[0].img },
+    { category: "distress", word: distress[0].word, img: distress[0].img }
+  ]);
+
+  // FINAL: all 9 (including those used in practice)
+  const finals = [];
 
   for (let i = 0; i < 3; i++) {
-    const round = shuffle([
-      {
-        category: "help",
-        word: help[i].word,
-        img: help[i].img
-      },
-      {
-        category: "avoid",
-        word: avoid[i].word,
-        img: avoid[i].img
-      },
-      {
-        category: "distress",
-        word: distress[i].word,
-        img: distress[i].img
-      }
-    ]);
-
-    rounds.push(...round);
+    finals.push(
+      ...shuffle([
+        { category: "help", word: help[i].word, img: help[i].img },
+        { category: "avoid", word: avoid[i].word, img: avoid[i].img },
+        { category: "distress", word: distress[i].word, img: distress[i].img }
+      ])
+    );
   }
 
-  return rounds;
+  return [...practice, ...finals];
 }
 
 
@@ -154,9 +180,6 @@ function shuffle(arr) {
 
 stimuli = buildStimuli();
 
-/* -------------------------
-   INPUT (tap + click)
--------------------------- */
 card.addEventListener("pointerdown", () => {
   if (clicked) return;
 
@@ -179,9 +202,6 @@ card.addEventListener("pointerdown", () => {
 
 });
 
-/* -------------------------
-   TRIAL ENGINE
--------------------------- */
 function runTrial() {
   if (currentIndex >= stimuli.length) {
     finish();
@@ -197,8 +217,10 @@ function runTrial() {
     block.name === "practice"
       ? "Practice Trial"
       : block.name === "final1"
-      ? "Final Trial Set 1"
-      : "Final Trial Set 2";
+        ? "Final Trial Set 1"
+        : block.name === "final2"
+          ? "Final Trial Set 2"
+          : "Final Trial Set 3";
 
   clicked = false;
   wordEl.innerText = "";
@@ -253,9 +275,6 @@ function runTrial() {
   }, STIMULUS_DURATION);
 }
 
-/* -------------------------
-   BREAK
--------------------------- */
 function startBreak(seconds) {
   clearInterval(breakInterval);
 
@@ -287,10 +306,6 @@ function startBreak(seconds) {
   }, 1000);
 }
 
-
-/* -------------------------
-   FINISH
--------------------------- */
 function finish() {
   clearTimeout(timer);
 
@@ -338,21 +353,27 @@ function clearSession() {
   localStorage.removeItem("study_sessions");
 }
 
-
-
-/* -------------------------
-   START
--------------------------- */
 if (!endEarly) {
   const startBtn = document.getElementById("start-btn");
   const instructionScreen = document.getElementById("instruction-screen");
 
   startBtn.onclick = () => {
+    instructionAudio.pause();
+    instructionAudio.currentTime = 0;
     instructionScreen.classList.add("hidden");
+
+    // show practice info modal
+    practiceModal.classList.remove("hidden");
+  };
+
+  practiceOkBtn.onclick = () => {
+    practiceModal.classList.add("hidden");
+
     card.classList.remove("hidden");
     roundText.classList.remove("hidden");
 
     runTrial();
   };
-}
 
+
+}

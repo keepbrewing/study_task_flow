@@ -50,7 +50,7 @@ body {
 }
 
 #card {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 #break-screen {
@@ -65,4 +65,14 @@ body {
 .break-hide {
   opacity: 0;
   transform: scale(0.96);
+}
+
+svg path {
+  filter: blur(0.3px);
+}
+
+.disabled-grid {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(30%);
 }

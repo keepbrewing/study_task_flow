@@ -5,7 +5,9 @@ export function exportToCSV(responses, sessionId) {
     "sessionId",
     "participantId",
     "gender",
-    "round",
+    "pd_first",
+    "pd_second",
+    "pd_result",
     "category",
     "blockType",
     "action",
@@ -15,16 +17,18 @@ export function exportToCSV(responses, sessionId) {
 
 
   const rows = responses.map(r => [
-  r.sessionId,
-  r.participantId,
-  r.gender,
-  r.round,
-  r.category,
-  r.blockType,
-  r.action ?? "",
-  r.responseTimeMs ?? "",
-  new Date(r.timestamp).toISOString()
-]);
+    r.sessionId,
+    r.participantId,
+    r.gender,
+    r.pd_first ?? "",
+    r.pd_second ?? "",
+    r.pd_result ?? "",
+    r.category,
+    r.blockType,
+    r.action ?? "",
+    r.responseTimeMs ?? "",
+    new Date(r.timestamp).toISOString()
+  ]);
 
 
 

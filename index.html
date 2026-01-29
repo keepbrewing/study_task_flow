@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-   <script src="./js/guard.js"></script>
+  <script src="./js/guard.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study</title>
@@ -12,109 +13,171 @@
 
 <body class="bg-[#F7FBFF] text-slate-800 min-h-screen">
 
-<!-- SVG background -->
+  <!-- SVG background -->
   <div class="absolute inset-0 -z-10 pointer-events-none">
-    <svg
-      viewBox="0 0 1440 900"
-      preserveAspectRatio="xMidYMid slice"
-      class="w-full h-full">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
 
       <!-- soft blobs -->
-      <circle cx="200" cy="200" r="180" fill="#E6F4FF"/>
-      <circle cx="1200" cy="150" r="220" fill="#FFF1CC"/>
-      <circle cx="1000" cy="650" r="260" fill="#E9FFF3"/>
-      <circle cx="300" cy="700" r="240" fill="#FFEAF1"/>
+      <circle cx="200" cy="200" r="180" fill="#E6F4FF" />
+      <circle cx="1200" cy="150" r="220" fill="#FFF1CC" />
+      <circle cx="1000" cy="650" r="260" fill="#E9FFF3" />
+      <circle cx="300" cy="700" r="240" fill="#FFEAF1" />
 
     </svg>
   </div>
 
-<div
-  id="page"
-  class="page w-full max-w-4xl px-6 py-8 mx-auto">
+  <div id="page" class="page w-full max-w-4xl px-6 py-8 mx-auto">
 
- <div class="bg-white/90 backdrop-blur rounded-3xl px-8 py-8 mb-8 shadow-md text-center space-y-6">
+    <div id="instruction-box"
+      class="bg-white/90 backdrop-blur rounded-3xl px-8 py-8 mb-8 shadow-md text-center space-y-6">
 
-  <h2 class="text-2xl md:text-3xl font-semibold text-slate-700">
-    Let’s look carefully &#128064;
-  </h2>
 
-  <p class="text-lg text-slate-600 leading-relaxed">
-    Look at all the pictures.<br>
-    One picture shows a problem.<br>
-    Click or touch the picture with the problem.
-  </p>
+      <p id="instruction-text" class="text-lg text-slate-700 leading-relaxed">
+        &#128064; Look at all the pictures.<br>
+        Is any child having a problem?
+      </p>
+      <div id="yes-no-buttons" class="flex justify-center gap-6">
+        <button id="yes-btn" class="px-8 py-3 bg-green-400 text-white rounded-full font-semibold">
+          ✅ Yes
+        </button>
+        <button id="no-btn" class="px-8 py-3 bg-red-400 text-white rounded-full font-semibold">
+          ❌ No
+        </button>
+      </div>
 
-  <button
-    id="play-instruction-audio"
-    class="mx-auto flex items-center gap-3
+      <button id="play-instruction-audio" class="mx-auto flex items-center gap-3
            bg-[#E6F4FF] text-[#3A8DDE]
            px-6 py-3 rounded-full
            font-semibold shadow-sm
            active:scale-95 transition">
 
-    &#128266; Hear instructions
-  </button>
+        &#128266; Hear instructions
+      </button>
 
-</div>
+    </div>
 
 
 
-  <div class="grid grid-cols-2 gap-4 md:gap-6">
-  
-  <div class="choice-card" data-choice="contrast1">
-    <img src="./assets/images/contrast1.png">
+    <div id="image-grid" class="disabled-grid grid grid-cols-2 gap-4 md:gap-6">
+
+      <div class="choice-card" data-choice="contrast1">
+        <img src="./assets/images/contrast1.png">
+      </div>
+
+      <div class="choice-card" data-choice="contrast2">
+        <img src="./assets/images/contrast2.png">
+      </div>
+
+      <div class="choice-card" data-choice="contrast3">
+        <img src="./assets/images/contrast3.png">
+      </div>
+
+      <div class="choice-card" data-choice="target" data-target="true">
+        <img src="./assets/images/target.png">
+      </div>
+
+    </div>
+
+
   </div>
 
-  <div class="choice-card" data-choice="contrast2">
-    <img src="./assets/images/contrast2.png">
-  </div>
-
-  <div class="choice-card" data-choice="contrast3">
-    <img src="./assets/images/contrast3.png">
-  </div>
-
-  <div class="choice-card" data-choice="target" data-target="true">
-    <img src="./assets/images/target.png">
-  </div>
-
-</div>
-
-
-</div>
-
-<script>
+  <script>
     const page = document.getElementById("page");
 
-document.querySelectorAll('.choice-card').forEach(tile => {
-  tile.onclick = () => {
-    const choice = tile.dataset.choice;
+    document.querySelectorAll(".choice-card").forEach(tile => {
+      tile.onclick = () => {
+        // safety: cannot click before YES
+        if (imageGrid.classList.contains("disabled-grid")) return;
 
-    localStorage.setItem("initial_choice", choice);
+        const choice = tile.dataset.choice;
 
-    page.classList.add("fade-out");
+        localStorage.setItem("initial_choice", choice);
+        localStorage.setItem("pd_completed", "true");
 
-    setTimeout(() => {
-      if (tile.dataset.target) {
-        location.href = 'task.html';
+        page.classList.add("fade-out");
+
+        setTimeout(() => {
+          if (tile.dataset.target) {
+            // correct detection
+            localStorage.setItem("pd_image_result", "target");
+            location.href = "task.html";
+          } else {
+            // incorrect detection
+            localStorage.setItem("pd_image_result", "contrast");
+            location.href = "task.html?end=true";
+          }
+        }, 400);
+      };
+    });
+
+
+    const instructionAudio = new Audio();
+
+    const audioBtn = document.getElementById("play-instruction-audio");
+    let currentAudio = "instruction1.mp3";
+
+    audioBtn.onclick = () => {
+      instructionAudio.pause();
+      instructionAudio.currentTime = 0;
+      instructionAudio.src = `./assets/audio/${currentAudio}`;
+      instructionAudio.play();
+    };
+
+    let noCount = 0;
+
+    const instructionText = document.getElementById("instruction-text");
+    const yesBtn = document.getElementById("yes-btn");
+    const noBtn = document.getElementById("no-btn");
+    const yesNoButtons = document.getElementById("yes-no-buttons");
+    const imageGrid = document.getElementById("image-grid");
+
+    yesBtn.onclick = () => {
+      if (noCount === 0) {
+        localStorage.setItem("pd_first", "yes");
       } else {
-        localStorage.setItem("study_status", "ended_early");
-        location.href = 'task.html?end=true';
+        localStorage.setItem("pd_second", "yes");
       }
-    }, 400);
-  };
-});
-
-const instructionAudio = new Audio("./assets/audio/instruction.mp3");
-
-  const audioBtn = document.getElementById("play-instruction-audio");
-
-  audioBtn.onclick = () => {
-    instructionAudio.currentTime = 0;
-    instructionAudio.play();
-  };
+      localStorage.setItem("pd_result", "detected");
+      imageGrid.classList.remove("disabled-grid");
 
 
-</script>
+      instructionText.innerHTML =
+        "&#128070; Touch or click the picture that shows the child with the problem.";
+
+      yesNoButtons.classList.add("hidden");
+      imageGrid.classList.remove("hidden");
+
+      currentAudio = "instruction1_1.mp3";
+    };
+
+    noBtn.onclick = () => {
+      noCount++;
+
+      if (noCount === 1) {
+        localStorage.setItem("pd_first", "no");
+        instructionText.innerHTML =
+          "&#128064; Let’s look carefully once more.<br>Is any child having a problem?";
+
+        currentAudio = "instruction2.mp3";
+      } else {
+        localStorage.setItem("pd_second", "no");
+        localStorage.setItem("pd_result", "missed");
+
+        instructionText.innerHTML = "&#128077 That’s okay. Let’s continue.";
+
+        currentAudio = "continue.mp3";
+
+        localStorage.setItem("pd_completed", "true");
+        setTimeout(() => {
+          location.href = "task.html";
+        }, 1500);
+      }
+    };
+
+
+
+  </script>
 
 </body>
+
 </html>

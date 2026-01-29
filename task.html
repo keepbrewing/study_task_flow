@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <script src="./js/guard.js"></script>
 
@@ -13,100 +14,121 @@
 
 <body class="bg-[#F7FBFF] text-slate-800 min-h-screen">
 
-    <!-- SVG background -->
+  <!-- SVG background -->
   <div class="absolute inset-0 -z-10 pointer-events-none">
-    <svg
-      viewBox="0 0 1440 900"
-      preserveAspectRatio="xMidYMid slice"
-      class="w-full h-full">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
 
       <!-- soft blobs -->
-      <circle cx="200" cy="200" r="180" fill="#E6F4FF"/>
-      <circle cx="1200" cy="150" r="220" fill="#FFF1CC"/>
-      <circle cx="1000" cy="650" r="260" fill="#E9FFF3"/>
-      <circle cx="300" cy="700" r="240" fill="#FFEAF1"/>
+      <circle cx="200" cy="200" r="180" fill="#E6F4FF" />
+      <circle cx="1200" cy="150" r="220" fill="#FFF1CC" />
+      <circle cx="1000" cy="650" r="260" fill="#E9FFF3" />
+      <circle cx="300" cy="700" r="240" fill="#FFEAF1" />
 
     </svg>
   </div>
 
-<div class="max-w-[75vh] mx-auto px-6 py-8">
-<div id="game" class="w-full h-[75vh] flex flex-col justify-center text-center">
+  <div class="max-w-[75vh] mx-auto px-6 py-8">
+    <div id="game" class="w-full h-[75vh] flex flex-col justify-center text-center">
 
-<div id="break-screen" class="hidden flex flex-col items-center justify-center space-y-6">
-  
-  <div class="text-2xl font-semibold text-slate-600">
-    Let’s take a short break 🌤
-  </div>
+      <div id="break-screen" class="hidden flex flex-col items-center justify-center space-y-6">
 
-  <div
-    id="break-timer"
-    class="w-32 h-32 rounded-full bg-white shadow-md
+        <div class="text-2xl font-semibold text-slate-600">
+          Good job! Rest for a while! 🌤
+        </div>
+
+        <div id="break-timer" class="w-32 h-32 rounded-full bg-white shadow-md
            flex items-center justify-center
            text-5xl font-bold text-[#6EC1FF]">
-    45
-  </div>
+          45
+        </div>
 
-</div>
-<div
-  id="loading-screen"
-  class="flex flex-col items-center justify-center space-y-6 py-20">
+      </div>
+      <div id="loading-screen" class="hidden flex flex-col items-center justify-center space-y-6 py-20">
 
-  <div class="text-3xl font-semibold text-slate-700">
-    Getting things ready…
-  </div>
+        <div class="text-3xl font-semibold text-slate-700">
+          Getting things ready…
+        </div>
 
-  <div class="w-48 h-3 bg-white rounded-full overflow-hidden shadow">
-    <div
-      id="loading-bar"
-      class="h-full bg-[#6EC1FF] transition-all duration-300"
-      style="width: 0%">
-    </div>
-  </div>
+        <div class="w-48 h-3 bg-white rounded-full overflow-hidden shadow">
+          <div id="loading-bar" class="h-full bg-[#6EC1FF] transition-all duration-300" style="width: 0%">
+          </div>
+        </div>
 
-</div>
+      </div>
 
-<div
-  id="instruction-screen"
-  class="hidden flex flex-col items-center justify-center space-y-6 py-20">
+      <div id="story-screen" class="hidden flex flex-col items-center justify-center space-y-6 py-20">
 
-  <div class="text-3xl font-semibold text-slate-700">
-    How to play 🎮
-  </div>
+        <p id="story-text" class="text-xl text-slate-700 text-center max-w-md leading-relaxed">
+        </p>
 
-  <div class="text-lg text-slate-600 text-center max-w-md space-y-3">
-    <p>🖼️ Pictures will appear one by one</p>
-    <p>👆 You can tap anywhere when you want</p>
-    <p>🌤️ There will be short breaks</p>
-  </div>
+      </div>
 
-  <button
-    id="start-btn"
-    class="bg-[#6EC1FF] text-white px-10 py-3 rounded-full
+
+      <div id="instruction-screen" class="hidden flex flex-col items-center justify-center space-y-6 py-20">
+
+        <div class="text-3xl font-semibold text-slate-700">
+          How to play 🎮
+        </div>
+
+        <div class="text-lg text-slate-600 text-center max-w-md space-y-3">
+          <p>Pictures will appear one by one</p>
+          <p>If you will act or feel this way, tap or click the picture.</p>
+          <p>If not, do not tap or click anything.</p>
+        </div>
+
+        <button id="play-instruction-audio" class="mx-auto flex items-center gap-3
+           bg-[#E6F4FF] text-[#3A8DDE]
+           px-6 py-3 rounded-full
+           font-semibold shadow-sm
+           active:scale-95 transition">
+
+          &#128266; Hear instructions
+        </button>
+
+        <button id="start-btn" class="bg-[#6EC1FF] text-white px-10 py-3 rounded-full
            text-lg font-semibold shadow-md
            active:scale-95 transition">
-    Start
-  </button>
-</div>
+          Start
+        </button>
+      </div>
 
 
 
-  <div id="round-text" class="hidden mb-4 text-slate-400"></div>
+      <div id="round-text" class="hidden mb-4 text-slate-400"></div>
 
-  <div id="card"
-       class="hidden bg-white/80 rounded-3xl p-6 cursor-pointer select-none shadow-md max-w-full mx-auto">
+      <div id="card" class="hidden bg-white/80 rounded-3xl p-6 cursor-pointer select-none shadow-md max-w-full mx-auto">
 
-    <img id="action-img"
-         class="mx-auto mb-6 hidden w-full rounded-2xl">
+        <img id="action-img" class="mx-auto mb-6 hidden w-full rounded-2xl">
 
-    <div id="action-word"
-         class="text-3xl font-semibold opacity-0 transition-opacity duration-500">
+        <div id="action-word" class="text-3xl font-semibold opacity-0 transition-opacity duration-500">
+        </div>
+
+      </div>
+      <div id="practice-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-6 text-center space-y-6 shadow-xl">
+
+          <div class="text-2xl font-semibold text-slate-700">
+            Practice Trial &#128210;
+          </div>
+
+          <p class="text-slate-600 text-lg leading-relaxed">
+            This is a practice trial.<br>
+            The final trial will begin after the practice trial.
+          </p>
+
+          <button id="practice-ok-btn" class="bg-[#6EC1FF] text-white px-10 py-3 rounded-full
+             text-lg font-semibold shadow-md
+             active:scale-95 transition">
+            OK
+          </button>
+
+        </div>
+      </div>
+
     </div>
-
   </div>
-
-</div>
-</div>
-
-<script type="module" src="./js/task.js"></script>
+  <script type="module" src="./js/task.js"></script>
 </body>
+
 </html>

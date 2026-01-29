@@ -1,11 +1,13 @@
 (function () {
-    const status = localStorage.getItem("study_status");
-  const MAX_SESSION_MINUTES = 30;
+
+  const MAX_SESSION_MINUTES = 15;
   const now = Date.now();
 
   const startedAt = localStorage.getItem("session_started_at");
 
-  // session expired
+  // ------------------------
+  // SESSION EXPIRY
+  // ------------------------
   if (startedAt) {
     const diffMinutes = (now - Number(startedAt)) / 60000;
 
@@ -18,7 +20,8 @@
 
   const pid = localStorage.getItem("participant_id");
   const gender = localStorage.getItem("participant_gender");
-  const choice = localStorage.getItem("initial_choice");
+  const pdCompleted = localStorage.getItem("pd_completed");
+  const status = localStorage.getItem("study_status");
 
   const page = location.pathname.split("/").pop();
 
@@ -28,20 +31,34 @@
     }
   }
 
+  // ------------------------
+  // NO PARTICIPANT
+  // ------------------------
   if (!pid || !gender) {
     go("participant.html");
     return;
   }
 
-  if (status === "ended_early" || status === "completed") {
-    window.location.replace("task.html?end=true");
+  // ------------------------
+  // STUDY FINISHED → RESET
+  // ------------------------
+  if (status === "completed") {
+    localStorage.clear();
+    go("participant.html");
     return;
   }
 
-  if (!choice) {
+  // ------------------------
+  // PD NOT DONE YET
+  // ------------------------
+  if (!pdCompleted) {
     go("index.html");
     return;
   }
 
+  // ------------------------
+  // PD DONE → TASK
+  // ------------------------
   go("task.html");
+
 })();

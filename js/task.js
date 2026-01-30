@@ -108,8 +108,8 @@ const STIMULUS_DURATION = 8000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
   { name: "practice", count: 3, break: 5 },
-  { name: "final1", count: 3, break: 10 },
-  { name: "final2", count: 3, break: 10 },
+  { name: "final1", count: 3, break: 5 },
+  { name: "final2", count: 3, break: 5 },
   { name: "final3", count: 3, break: 0 }
 ];
 

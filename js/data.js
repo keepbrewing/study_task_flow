@@ -11,7 +11,7 @@ export const categories = {
   ],
   avoid: [
     { word: "Ignore", img: "ignore.png" },
-    { word: "Play", img: "play.png" },
+    { word: "Continue playing with my own blocks", img: "play.png" },
     { word: "Walk away", img: "walk.png" }
   ]
 };

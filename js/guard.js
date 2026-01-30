@@ -1,11 +1,9 @@
 (function () {
-  const page = location.pathname.split("/").pop();
-  if(page === "" || page === "participant.html"){
-    return;
-  }
 
   const MAX_SESSION_MINUTES = 15;
   const now = Date.now();
+
+  const page = location.pathname.split("/").pop() || "index.html";
 
   const startedAt = localStorage.getItem("session_started_at");
   const pid = localStorage.getItem("participant_id");
@@ -15,19 +13,23 @@
 
   function resetSession() {
     localStorage.clear();
-    window.location.replace("participant.html");
+    if (page !== "participant.html") {
+      window.location.replace("participant.html");
+    }
   }
 
   // ------------------------
-  // NO SESSION TIMESTAMP → INVALID SESSION
+  // NO SESSION AT ALL
   // ------------------------
-  if (!startedAt) {
-    resetSession();
+  if (!startedAt || !pid || !gender) {
+    if (page !== "participant.html") {
+      resetSession();
+    }
     return;
   }
 
   // ------------------------
-  // SESSION EXPIRY CHECK
+  // SESSION EXPIRED
   // ------------------------
   const diffMinutes = (now - Number(startedAt)) / 60000;
 
@@ -37,15 +39,7 @@
   }
 
   // ------------------------
-  // NO PARTICIPANT DATA
-  // ------------------------
-  if (!pid || !gender) {
-    resetSession();
-    return;
-  }
-
-  // ------------------------
-  // STUDY COMPLETED → RESET
+  // STUDY COMPLETED
   // ------------------------
   if (status === "completed") {
     resetSession();
@@ -53,7 +47,7 @@
   }
 
   // ------------------------
-  // PD NOT DONE YET
+  // PD NOT DONE
   // ------------------------
   if (!pdCompleted) {
     if (page !== "index.html") {

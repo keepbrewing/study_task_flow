@@ -104,7 +104,7 @@ const breakScreen = document.getElementById("break-screen");
 const breakTimerEl = document.getElementById("break-timer");
 
 const WORD_DELAY = 1500;
-const STIMULUS_DURATION = 6000;
+const STIMULUS_DURATION = 8000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
   { name: "practice", count: 3, break: 5 },

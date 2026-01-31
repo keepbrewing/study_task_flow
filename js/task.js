@@ -107,9 +107,9 @@ const WORD_DELAY = 1500;
 const STIMULUS_DURATION = 8000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
-  { name: "practice", count: 3, break: 5 },
-  { name: "final1", count: 3, break: 5 },
-  { name: "final2", count: 3, break: 5 },
+  { name: "practice", count: 3, break: 5, message: "Ready...Steady...Go!" },
+  { name: "final1", count: 3, break: 5, message: "Take a short break" },
+  { name: "final2", count: 3, break: 5, message: "Take a short break" },
   { name: "final3", count: 3, break: 0 }
 ];
 
@@ -286,9 +286,9 @@ function startBreak(seconds) {
   breakTimerEl.innerText = remaining;
 
   breakScreen.querySelector("div").innerText =
-    seconds === 5
-      ? "Ready… Steady… Go!"
-      : "Take a short break";
+    BLOCKS[blockIndex - 1]
+      ?.message
+      || "";
 
   breakInterval = setInterval(() => {
     remaining--;

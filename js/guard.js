@@ -8,8 +8,10 @@
   const startedAt = localStorage.getItem("session_started_at");
   const pid = localStorage.getItem("participant_id");
   const gender = localStorage.getItem("participant_gender");
+
   const pdCompleted = localStorage.getItem("pd_completed");
-  const status = localStorage.getItem("study_status");
+  const affectCompleted = localStorage.getItem("affect_completed");
+  const studyCompleted = localStorage.getItem("study_status");
 
   function resetSession() {
     localStorage.clear();
@@ -19,12 +21,10 @@
   }
 
   // ------------------------
-  // NO SESSION AT ALL
+  // NO SESSION
   // ------------------------
   if (!startedAt || !pid || !gender) {
-    if (page !== "participant.html") {
-      resetSession();
-    }
+    if (page !== "participant.html") resetSession();
     return;
   }
 
@@ -39,16 +39,18 @@
   }
 
   // ------------------------
-  // STUDY COMPLETED
+  // STUDY FINISHED
   // ------------------------
-  if (status === "completed") {
+  if (studyCompleted === "completed") {
     resetSession();
     return;
   }
 
-  // ------------------------
-  // PD NOT DONE
-  // ------------------------
+  // =====================================================
+  // FLOW CONTROL
+  // =====================================================
+
+  // ---- BEFORE PD ----
   if (!pdCompleted) {
     if (page !== "index.html") {
       window.location.replace("index.html");
@@ -56,11 +58,20 @@
     return;
   }
 
-  // ------------------------
-  // PD DONE → TASK
-  // ------------------------
-  if (page !== "task.html") {
-    window.location.replace("task.html");
+  // ---- AFTER PD, BEFORE AFFECT ----
+  if (pdCompleted && !affectCompleted) {
+    if (page !== "affect.html") {
+      window.location.replace("affect.html");
+    }
+    return;
+  }
+
+  // ---- AFTER AFFECT ----
+  if (affectCompleted) {
+    if (page !== "task.html") {
+      window.location.replace("task.html");
+    }
+    return;
   }
 
 })();

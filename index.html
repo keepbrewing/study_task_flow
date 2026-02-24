@@ -81,102 +81,37 @@
 
   </div>
 
-  <script>
-    const page = document.getElementById("page");
+  <div id="help-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-    document.querySelectorAll(".choice-card").forEach(tile => {
-      tile.onclick = () => {
-        // safety: cannot click before YES
-        if (imageGrid.classList.contains("disabled-grid")) return;
+    <div id="help-card"
+      class="help-modal-card bg-white rounded-3xl p-8 max-w-md w-full mx-6 text-center space-y-6 shadow-xl">
 
-        const choice = tile.dataset.choice;
+      <div class="text-2xl font-semibold text-slate-700">
+        Let’s look together &#128064;
+      </div>
 
-        localStorage.setItem("initial_choice", choice);
-        localStorage.setItem("pd_completed", "true");
+      <img id="help-modal-image"
+     class="mx-auto rounded-2xl max-w-xs shadow-md hidden">
 
-        page.classList.add("fade-out");
+      <p class="text-lg text-slate-600 leading-relaxed">
+        One child’s tower fell down.<br>
+        The child feels sad.
+      </p>
 
-        setTimeout(() => {
-          if (tile.dataset.target) {
-            // correct detection
-            localStorage.setItem("pd_image_result", "target");
-            location.href = "task.html";
-          } else {
-            // incorrect detection
-            localStorage.setItem("pd_image_result", "contrast");
-            location.href = "task.html?end=true";
-          }
-        }, 400);
-      };
-    });
+      <!-- AUDIO BUTTON -->
+      <button id="help-audio-btn" class="bg-[#E6F4FF] text-[#3A8DDE]
+             px-6 py-3 rounded-full font-semibold shadow-sm">
+        &#128266; Hear explanation
+      </button>
 
+      <button id="help-close-btn" class="bg-[#6EC1FF] text-white px-8 py-3 rounded-full font-semibold">
+        OK
+      </button>
 
-    const instructionAudio = new Audio();
+    </div>
+  </div>
 
-    const audioBtn = document.getElementById("play-instruction-audio");
-    let currentAudio = "instruction1.mp3";
-
-    audioBtn.onclick = () => {
-      instructionAudio.pause();
-      instructionAudio.currentTime = 0;
-      instructionAudio.src = `./assets/audio/${currentAudio}`;
-      instructionAudio.play();
-    };
-
-    let noCount = 0;
-
-    const instructionText = document.getElementById("instruction-text");
-    const yesBtn = document.getElementById("yes-btn");
-    const noBtn = document.getElementById("no-btn");
-    const yesNoButtons = document.getElementById("yes-no-buttons");
-    const imageGrid = document.getElementById("image-grid");
-
-    yesBtn.onclick = () => {
-      if (noCount === 0) {
-        localStorage.setItem("pd_first", "yes");
-      } else {
-        localStorage.setItem("pd_second", "yes");
-      }
-      localStorage.setItem("pd_result", "detected");
-      imageGrid.classList.remove("disabled-grid");
-
-
-      instructionText.innerHTML =
-        "&#128070; Touch or click the picture that shows the child with the problem.";
-
-      yesNoButtons.classList.add("hidden");
-      imageGrid.classList.remove("hidden");
-
-      currentAudio = "instruction1_1.mp3";
-    };
-
-    noBtn.onclick = () => {
-      noCount++;
-
-      if (noCount === 1) {
-        localStorage.setItem("pd_first", "no");
-        instructionText.innerHTML =
-          "&#128064; Let’s look carefully once more.<br>Is any child having a problem?";
-
-        currentAudio = "instruction2.mp3";
-      } else {
-        localStorage.setItem("pd_second", "no");
-        localStorage.setItem("pd_result", "missed");
-
-        instructionText.innerHTML = "&#128077 That’s okay. Let’s continue.";
-
-        currentAudio = "continue.mp3";
-
-        localStorage.setItem("pd_completed", "true");
-        setTimeout(() => {
-          location.href = "task.html";
-        }, 1500);
-      }
-    };
-
-
-
-  </script>
+  <script type="module" src="./js/index.js"></script>
 
 </body>
 

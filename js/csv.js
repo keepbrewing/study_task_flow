@@ -5,6 +5,8 @@ export function exportToCSV(responses, sessionId) {
     "sessionId",
     "participantId",
     "gender",
+    "stage",
+    "eventType",
     "pd_first",
     "pd_second",
     "pd_result",
@@ -12,6 +14,7 @@ export function exportToCSV(responses, sessionId) {
     "blockType",
     "action",
     "responseTimeMs",
+    "value",
     "timestamp"
   ];
 
@@ -20,6 +23,8 @@ export function exportToCSV(responses, sessionId) {
     r.sessionId,
     r.participantId,
     r.gender,
+    r.stage ?? "",
+    r.eventType ?? "",
     r.pd_first ?? "",
     r.pd_second ?? "",
     r.pd_result ?? "",
@@ -27,6 +32,7 @@ export function exportToCSV(responses, sessionId) {
     r.blockType,
     r.action ?? "",
     r.responseTimeMs ?? "",
+    r.value ?? "",
     new Date(r.timestamp).toISOString()
   ]);
 

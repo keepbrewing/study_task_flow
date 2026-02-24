@@ -2,6 +2,14 @@ import { categories } from "./data.js";
 import { Session } from "./state.js";
 import { exportToCSV } from "./csv.js";
 
+// ✅ Merge affect responses into this session
+const affectData =
+  JSON.parse(localStorage.getItem("affect_responses") || "[]");
+
+if (affectData.length) {
+  Session.responses.push(...affectData);
+}
+
 const loadingScreen = document.getElementById("loading-screen");
 const instructionScreen = document.getElementById("instruction-screen");
 const storyScreen = document.getElementById("story-screen");
@@ -351,6 +359,7 @@ function clearSession() {
   localStorage.removeItem("participant_gender");
   localStorage.removeItem("initial_choice");
   localStorage.removeItem("study_sessions");
+  localStorage.removeItem("affect_responses");
 }
 
 if (!endEarly) {
@@ -374,6 +383,4 @@ if (!endEarly) {
 
     runTrial();
   };
-
-
 }

@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setupRecording();
 
         recordingStopHandler = () => {
-            finishStage(STAGES.STEP_2B, saveStage2AData);
+            finishStage(STAGES.STEP_3, saveStage2AData);
         };
 
         const stageStart = performance.now();
@@ -175,15 +175,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     responded = true;
 
-                    saveStage2BData(1);
-
-                    document
-                        .getElementById("affect-container")
-                        .classList.add("fade-out");
-
-                    stageTimeout(() => {
-                        startStage(STAGES.STEP_2C);
-                    }, 500);
+                    finishStage(
+                        STAGES.STEP_3,
+                        () => saveStage2BData(1)
+                    );
 
                     return;
                 }

@@ -17,6 +17,11 @@ const storyText = document.getElementById("story-text");
 const practiceModal = document.getElementById("practice-modal");
 const practiceOkBtn = document.getElementById("practice-ok-btn");
 
+const laughModal = document.getElementById("laugh-modal");
+const laughChoices = document.querySelectorAll(".laugh-choice");
+
+let trialPaused = false;
+
 const STORY_LINES = [
   "You and other children were building block towers.",
   "One child’s block tower fell down.",
@@ -115,10 +120,10 @@ const WORD_DELAY = 1500;
 const STIMULUS_DURATION = 8000;
 const BREAK_DURATION = 45;
 const BLOCKS = [
-  { name: "practice", count: 3, break: 5, message: "Ready...Steady...Go!" },
-  { name: "final1", count: 3, break: 5, message: "Take a short break" },
-  { name: "final2", count: 3, break: 5, message: "Take a short break" },
-  { name: "final3", count: 3, break: 0 }
+  { name: "practice", count: 4, break: 5, message: "Ready...Steady...Go!" },
+  { name: "final1", count: 4, break: 5, message: "Take a short break" },
+  { name: "final2", count: 4, break: 5, message: "Take a short break" },
+  { name: "final3", count: 4, break: 0 }
 ];
 
 let stimuli = [];
@@ -154,33 +159,46 @@ if (endEarly) {
 }
 
 function buildStimuli() {
-  const help = shuffle([...categories.help]);
-  const avoid = shuffle([...categories.avoid]);
-  const distress = shuffle([...categories.distress]);
 
-  // PRACTICE: 1 from each
+  const ec = categories.ec;
+  const pd = categories.pd;
+  const ai = categories.ai;
+  const pa = categories.pa;
+
+  // random index for practice trials
+  const p = Math.floor(Math.random() * 3);
+
   const practice = shuffle([
-    { category: "help", word: help[0].word, img: help[0].img },
-    { category: "avoid", word: avoid[0].word, img: avoid[0].img },
-    { category: "distress", word: distress[0].word, img: distress[0].img }
+    { category: "ec", word: ec[p].word, img: ec[p].img },
+    { category: "pd", word: pd[p].word, img: pd[p].img },
+    { category: "ai", word: ai[p].word, img: ai[p].img },
+    { category: "pa", word: pa[p].word, img: pa[p].img }
   ]);
 
-  // FINAL: all 9 (including those used in practice)
-  const finals = [];
+  const finals = [
 
-  for (let i = 0; i < 3; i++) {
-    finals.push(
-      ...shuffle([
-        { category: "help", word: help[i].word, img: help[i].img },
-        { category: "avoid", word: avoid[i].word, img: avoid[i].img },
-        { category: "distress", word: distress[i].word, img: distress[i].img }
-      ])
-    );
-  }
+    // Cycle 1
+    { category: "ec", word: ec[0].word, img: ec[0].img },
+    { category: "pd", word: pd[0].word, img: pd[0].img },
+    { category: "ai", word: ai[0].word, img: ai[0].img },
+    { category: "pa", word: pa[0].word, img: pa[0].img },
+
+    // Cycle 2
+    { category: "pd", word: pd[1].word, img: pd[1].img },
+    { category: "ai", word: ai[1].word, img: ai[1].img },
+    { category: "pa", word: pa[1].word, img: pa[1].img },
+    { category: "ec", word: ec[1].word, img: ec[1].img },
+
+    // Cycle 3
+    { category: "ai", word: ai[2].word, img: ai[2].img },
+    { category: "pa", word: pa[2].word, img: pa[2].img },
+    { category: "ec", word: ec[2].word, img: ec[2].img },
+    { category: "pd", word: pd[2].word, img: pd[2].img }
+
+  ];
 
   return [...practice, ...finals];
 }
-
 
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
@@ -207,6 +225,12 @@ card.addEventListener("pointerdown", () => {
     responseTimeMs: rt,
     timestamp: Date.now()
   });
+
+  if (s.category === "pa" && s.word.includes("Laugh")) {
+    trialPaused = true;
+    clearTimeout(timer);
+    showLaughFollowup();
+  }
 
 });
 
@@ -247,6 +271,7 @@ function runTrial() {
 
   // end stimulus
   timer = setTimeout(() => {
+    if (trialPaused) return;
     if (!clicked) {
       Session.responses.push({
         sessionId: Session.id,
@@ -296,7 +321,7 @@ function startBreak(seconds) {
   breakScreen.querySelector("div").innerText =
     BLOCKS[blockIndex - 1]
       ?.message
-      || "";
+    || "";
 
   breakInterval = setInterval(() => {
     remaining--;
@@ -360,6 +385,53 @@ function clearSession() {
   localStorage.removeItem("initial_choice");
   localStorage.removeItem("study_sessions");
   localStorage.removeItem("affect_responses");
+}
+
+function showLaughFollowup() {
+
+  laughModal.classList.remove("hidden");
+
+  laughChoices.forEach(btn => {
+
+    btn.onclick = () => {
+
+      const reason = btn.innerText;
+
+      Session.responses.push({
+        sessionId: Session.id,
+        participantId: Session.participantId,
+        gender: Session.gender,
+        stage: "5_followup",
+        eventType: "laugh_reason",
+        value: reason,
+        timestamp: Date.now()
+      });
+
+      laughModal.classList.add("hidden");
+
+      trialPaused = false;
+      // advance trial exactly like timeout does
+      currentIndex++;
+      trialInBlock++;
+
+      const block = BLOCKS[blockIndex];
+
+      if (trialInBlock >= block.count) {
+        blockIndex++;
+        trialInBlock = 0;
+
+        if (block.break > 0 && blockIndex < BLOCKS.length) {
+          startBreak(block.break);
+        } else {
+          runTrial();
+        }
+      } else {
+        runTrial();
+      }
+    };
+
+  });
+
 }
 
 if (!endEarly) {

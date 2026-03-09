@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="emoji-options"
             class="flex justify-center gap-10 text-6xl cursor-pointer select-none">
 
-            <div data-score="1">&#128546</div>
-            <div data-score="0">&#128529</div>
-            <div data-score="0">&#128522</div>
+            <div class="affect-choice" data-score="1">&#128546</div>
+            <div class="affect-choice" data-score="0">&#128529</div>
+            <div class="affect-choice" data-score="0">&#128522</div>
 
         </div>
 
@@ -175,10 +175,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     responded = true;
 
-                    finishStage(
-                        STAGES.STEP_3,
-                        () => saveStage2BData(1)
-                    );
+                    options.forEach(o => o.classList.remove("affect-choice-selected"));
+                    btn.classList.add("affect-choice-selected");
+
+                    stageTimeout(() => {
+                        finishStage(
+                            STAGES.STEP_3,
+                            () => saveStage2BData(1)
+                        );
+                    }, 150);
 
                     return;
                 }
@@ -187,8 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 status.innerText = "Let’s try again.";
 
                 stageTimeout(() => {
-                    btn.style.transform = "scale(1)";
-                    btn.style.opacity = "1";
+                    options.forEach(o => o.classList.remove("affect-choice-selected"));
+                    btn.classList.add("affect-choice-selected");
                 }, 300);
             };
         });
@@ -227,17 +232,17 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="emoji-word-options"
             class="flex justify-center gap-8 text-center select-none">
 
-            <div class="cursor-pointer option" data-score="2">
+            <div class="cursor-pointer option affect-choice" data-score="2">
                 <div class="text-6xl">&#128546</div>
                 <div class="text-lg mt-2">Sad</div>
             </div>
 
-            <div class="cursor-pointer option" data-score="0">
+            <div class="cursor-pointer option affect-choice" data-score="0">
                 <div class="text-6xl">&#128529</div>
                 <div class="text-lg mt-2">Okay</div>
             </div>
 
-            <div class="cursor-pointer option" data-score="0">
+            <div class="cursor-pointer option affect-choice" data-score="0">
                 <div class="text-6xl">&#128522</div>
                 <div class="text-lg mt-2">Happy</div>
             </div>
@@ -268,18 +273,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const score = opt.dataset.score;
 
-                opt.style.transform = "scale(1.25)";
-                opt.style.transition = "0.2s";
-
-                saveStage2CData(score);
-
-                document
-                    .getElementById("affect-container")
-                    .classList.add("fade-out");
+                options.forEach(o => o.classList.remove("affect-choice-selected"));
+                opt.classList.add("affect-choice-selected");
 
                 stageTimeout(() => {
+
+                    saveStage2CData(score);
+
+                    document
+                        .getElementById("affect-container")
+                        .classList.add("fade-out");
+
                     startStage(STAGES.STEP_3);
-                }, 500);
+
+                }, 150);
             };
         });
 
@@ -385,22 +392,22 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="emotion-options"
             class="flex flex-wrap justify-center gap-6 text-center">
 
-            <div class="emotion option" data-value="happy">
+            <div class="emotion option affect-choice" data-value="happy">
                 <div class="text-6xl">😊</div>
                 <div>Happy</div>
             </div>
 
-            <div class="emotion option" data-value="sad">
+            <div class="emotion option affect-choice" data-value="sad">
                 <div class="text-6xl">😢</div>
                 <div>Sad</div>
             </div>
 
-            <div class="emotion option" data-value="afraid">
+            <div class="emotion option affect-choice" data-value="afraid">
                 <div class="text-6xl">😨</div>
                 <div>Afraid</div>
             </div>
 
-            <div class="emotion option" data-value="none">
+            <div class="emotion option affect-choice" data-value="none">
                 <div class="text-6xl">😐</div>
                 <div>Did not feel anything</div>
             </div>
@@ -419,18 +426,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const emotion = opt.dataset.value;
 
-                opt.style.transform = "scale(1.2)";
-                opt.style.transition = "0.2s";
+                options.forEach(o => o.classList.remove("affect-choice-selected"));
+                opt.classList.add("affect-choice-selected");
 
-                saveStage4Emotion(emotion);
+                stageTimeout(() => {
 
-                // if child felt nothing → finish immediately
-                if (emotion === "none") {
-                    finishAffectStage();
-                    return;
-                }
+                    saveStage4Emotion(emotion);
 
-                showIntensityScale();
+                    if (emotion === "none") {
+                        finishAffectStage();
+                        return;
+                    }
+
+                    showIntensityScale();
+
+                }, 150);
             };
         });
     }
@@ -447,17 +457,17 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="intensity-options"
             class="flex justify-center gap-8 text-center">
 
-            <div class="intensity option" data-value="not_much">
+            <div class="intensity option affect-choice" data-value="not_much">
                 <div class="text-5xl">🙂</div>
                 <div>Not much</div>
             </div>
 
-            <div class="intensity option" data-value="a_little">
+            <div class="intensity option affect-choice" data-value="a_little">
                 <div class="text-5xl">😟</div>
                 <div>A little</div>
             </div>
 
-            <div class="intensity option" data-value="a_lot">
+            <div class="intensity option affect-choice" data-value="a_lot">
                 <div class="text-5xl">😭</div>
                 <div>A lot</div>
             </div>
@@ -472,6 +482,8 @@ document.addEventListener("DOMContentLoaded", () => {
             opt.onclick = () => {
 
                 const value = opt.dataset.value;
+                options.forEach(o => o.classList.remove("affect-choice-selected"));
+                opt.classList.add("affect-choice-selected");
 
                 saveStage4Intensity(value);
 

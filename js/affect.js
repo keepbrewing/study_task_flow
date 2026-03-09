@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const stage2CRetryAudio = new Audio("./assets/audio/affect2c.mp3");
     const stage3Audio = new Audio("./assets/audio/stage3.mp3");
     const stage3PromptAudio = new Audio("./assets/audio/stage3.mp3");
+    const stage4Audio = new Audio("./assets/audio/stage4.mp3");
+    const stage4Audio_1 = new Audio("./assets/audio/stage4_1.mp3");
+
 
     const hearAgainBtn = document.getElementById("affect-audio-btn");
 
@@ -26,9 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     hearAgainBtn.onclick = () => {
         if (!currentInstructionAudio) return;
-        promptAudio.pause();
-        promptAudio.currentTime = 0;
-        promptAudio.play().catch(() => { });
+        currentInstructionAudio.pause();
+        currentInstructionAudio.currentTime = 0;
+        currentInstructionAudio.play().catch(() => { });
     };
 
     function stageTimeout(fn, delay) {
@@ -386,6 +389,10 @@ document.addEventListener("DOMContentLoaded", () => {
         promptEl.innerHTML =
             "How did you feel for the child?";
 
+        currentInstructionAudio = stage4Audio;
+        stage4Audio.currentTime = 0;
+        stage4Audio.play().catch(() => { });
+
         const controls = document.getElementById("affect-input");
 
         controls.innerHTML = `
@@ -450,6 +457,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         promptEl.innerHTML =
             "How much did you feel?";
+
+        currentInstructionAudio = stage4Audio_1;
+        stage4Audio_1.currentTime = 0;
+        stage4Audio_1.play().catch(() => { });
 
         const controls = document.getElementById("affect-input");
 

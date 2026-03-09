@@ -206,7 +206,12 @@ function shuffle(arr) {
 
 stimuli = buildStimuli();
 
-card.addEventListener("pointerdown", () => {
+card.addEventListener("pointerdown", (e) => {
+  card.classList.add("card-tap-feedback");
+
+  setTimeout(() => {
+    card.classList.remove("card-tap-feedback");
+  }, 180);
   if (clicked) return;
 
   clicked = true;

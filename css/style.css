@@ -118,3 +118,9 @@ svg path {
   box-shadow: 0 6px 0 #f1e1a6;
   transform: translateY(2px);
 }
+
+.card-tap-feedback {
+  transform: scale(0.97);
+  box-shadow: 0 3px 0 #f1e1a6;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}

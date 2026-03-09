@@ -12,7 +12,7 @@ export const categories = {
   ai: [
     { word: "Ignore the child", img: "ignore.png" },
     { word: "Keep playing with my blocks", img: "play.png" },
-    { word: "Look away and continue", img: "walk.png" }
+    { word: "Look away and leave the room", img: "walk.png" }
   ],
   pa: [
     { word: "Laugh because it looks funny", img: "laugh.png" },

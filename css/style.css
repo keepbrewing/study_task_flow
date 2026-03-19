@@ -124,3 +124,11 @@ svg path {
   box-shadow: 0 3px 0 #f1e1a6;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+
+body.paused {
+  pointer-events: none;
+}
+
+body.paused #pause-btn {
+  pointer-events: auto;
+}

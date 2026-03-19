@@ -1,6 +1,7 @@
 import { categories } from "./data.js";
 import { Session } from "./state.js";
 import { exportToCSV } from "./csv.js";
+import { registerTimer, pauseGame, resumeGame, getPauseState } from "./pause.js";
 
 // ✅ Merge affect responses into this session
 const affectData =
@@ -46,17 +47,20 @@ function playStorySequence() {
   function showNextLine() {
     if (index >= STORY_LINES.length) {
       // pause 2 seconds after last line
-      setTimeout(() => {
+      const t = setTimeout(() => {
+        if (getPauseState()) return;
         storyScreen.classList.add("hidden");
         instructionScreen.classList.remove("hidden");
       }, 2000);
+      registerTimer(t);
       return;
     }
 
     storyText.innerHTML += STORY_LINES[index] + "<br><br>";
     index++;
 
-    setTimeout(showNextLine, 2000);
+    const t2 = setTimeout(showNextLine, 2000);
+    registerTimer(t2);
   }
 
   storyText.innerHTML = "";
@@ -207,6 +211,7 @@ function shuffle(arr) {
 stimuli = buildStimuli();
 
 card.addEventListener("pointerdown", (e) => {
+  if (getPauseState()) return;
   card.classList.add("card-tap-feedback");
 
   setTimeout(() => {
@@ -230,6 +235,12 @@ card.addEventListener("pointerdown", (e) => {
     responseTimeMs: rt,
     timestamp: Date.now()
   });
+
+  if (getPauseState()) return;
+  if (!window.currentTimer) {
+    advanceTrial();
+    return;
+  }
 
   if (s.category === "pa" && s.word.includes("Laugh")) {
     trialPaused = true;
@@ -269,13 +280,18 @@ function runTrial() {
   stimulusStart = performance.now();
 
   // show word later
-  setTimeout(() => {
+  const wordTimer = setTimeout(() => {
+    if (getPauseState()) return;
+
     wordEl.innerText = s.word;
     wordEl.style.opacity = 1;
   }, WORD_DELAY);
 
+  registerTimer(wordTimer);
+
   // end stimulus
   timer = setTimeout(() => {
+    if (getPauseState()) return;
     if (trialPaused) return;
     if (!clicked) {
       Session.responses.push({
@@ -311,6 +327,8 @@ function runTrial() {
 
 
   }, STIMULUS_DURATION);
+  registerTimer(timer);
+  window.currentTimer = timer;
 }
 
 function startBreak(seconds) {
@@ -329,6 +347,7 @@ function startBreak(seconds) {
     || "";
 
   breakInterval = setInterval(() => {
+    if (getPauseState()) return;
     remaining--;
     breakTimerEl.innerText = remaining;
 
@@ -461,3 +480,35 @@ if (!endEarly) {
     runTrial();
   };
 }
+
+function advanceTrial() {
+  currentIndex++;
+  trialInBlock++;
+
+  const block = BLOCKS[blockIndex];
+
+  if (trialInBlock >= block.count) {
+    blockIndex++;
+    trialInBlock = 0;
+
+    if (block.break > 0 && blockIndex < BLOCKS.length) {
+      startBreak(block.break);
+    } else {
+      runTrial();
+    }
+  } else {
+    runTrial();
+  }
+}
+
+const pauseBtn = document.getElementById("pause-btn");
+
+pauseBtn.onclick = () => {
+  if (getPauseState()) {
+    resumeGame();
+    pauseBtn.innerText = "⏸ Pause";
+  } else {
+    pauseGame();
+    pauseBtn.innerText = "▶ Resume";
+  }
+};

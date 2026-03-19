@@ -1,4 +1,5 @@
 import { Session } from "./state.js";
+import { registerTimer, pauseGame, resumeGame, getPauseState } from "./pause.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -35,8 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function stageTimeout(fn, delay) {
-        const id = setTimeout(fn, delay);
+        const id = setTimeout(() => {
+            if (!getPauseState()) fn();
+        }, delay);
+
         stageTimers.push(id);
+        registerTimer(id);
         return id;
     }
 
@@ -119,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             retryAudio.currentTime = 0;
             retryAudio.play().catch(() => { });
 
-        }, 10000);
+        }, 30000);
 
 
         // ---- 20s advance ----
@@ -129,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             startStage(STAGES.STEP_2B);
 
-        }, 20000);
+        }, 60000);
     }
 
     function start2B() {
@@ -211,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stage2BRetryAudio.currentTime = 0;
             stage2BRetryAudio.play().catch(() => { });
 
-        }, 10000);
+        }, 30000);
 
         // auto advance
         stageTimeout(() => {
@@ -221,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 startStage(STAGES.STEP_2C);
             }
 
-        }, 20000);
+        }, 60000);
     }
 
     function start2C() {
@@ -303,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stage2CRetryAudio.currentTime = 0;
             stage2CRetryAudio.play().catch(() => { });
 
-        }, 10000);
+        }, 30000);
 
         // ---------- AUTO ADVANCE @20s ----------
         stageTimeout(() => {
@@ -313,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 startStage(STAGES.STEP_3);
             }
 
-        }, 20000);
+        }, 60000);
     }
 
     function start3() {
@@ -363,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stage3PromptAudio.currentTime = 0;
             stage3PromptAudio.play().catch(() => { });
 
-        }, 10000);
+        }, 30000);
 
 
         const finishTimer = stageTimeout(() => {
@@ -371,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
             finishStage(STAGES.STEP_4, () =>
                 saveStage3Data(recordingStarted)
             );
-        }, 20000);
+        }, 60000);
 
 
         // ✅ STOP timers if child actually records
@@ -721,5 +726,17 @@ document.addEventListener("DOMContentLoaded", () => {
             startStage(nextStage);
         }, 400);
     }
+
+    const pauseBtn = document.getElementById("pause-btn");
+
+    pauseBtn.onclick = () => {
+        if (getPauseState()) {
+            resumeGame();
+            pauseBtn.innerText = "⏸ Pause";
+        } else {
+            pauseGame();
+            pauseBtn.innerText = "▶ Resume";
+        }
+    };
 
 });
